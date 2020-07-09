@@ -19,6 +19,7 @@
     "sass-loader": "^9.0.1",
     "sweetalert2": "^9.15.2",
     "vue": "^2.6.11",
+    "vue-confetti": "^2.0.8",
     "vue-native-websocket": "^2.0.14",
     "vue-router": "^3.2.0",
     "vue-sidebar-menu": "^4.6.1",

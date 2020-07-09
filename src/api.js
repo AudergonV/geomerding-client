@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const client = axios.create({
-    baseURL: 'https://geo.gwyrin.ch:7777',
+    baseURL: 'https://geo.gwyrin.ch:7878',
     json: true
 })
 
@@ -24,26 +24,35 @@ export default {
     getVersion() {
         return this.execute('get', '/api/version');
     },
-    getMe(){
+    getMe() {
         return this.execute('get', '/api/users/@me');
     },
-    getAccessToken(){
+    getAccessToken() {
         return this.execute('get', '/auth/token');
     },
-    getRules(){
+    getRules() {
         return this.execute('get', '/api/rules');
     },
-    createGame(game){
-        return this.execute('post', '/api/games', {game});
+    createGame(game) {
+        return this.execute('post', '/api/games', { game });
     },
-    getGame(link){
+    getGame(link) {
         return this.execute('get', `/api/games/${link}`);
     },
-    getGames(){
+    getGames() {
         return this.execute('get', `/api/games`);
     },
-    getMyGames(){
-        return this.execute('get', `/api/mygames`);
-    }
-    
+    getMyWaitingGames() {
+        return this.execute('get', `/api/mygames/waiting`);
+    },
+    getMyPlayingGames() {
+        return this.execute('get', `/api/mygames/playing`);
+    },
+    getMyFinishedGames() {
+        return this.execute('get', `/api/mygames/finished`);
+    },
+    /*deleteGame(link){
+        return this.execute('delete', `/api/games/${link}`);
+    }*/
+
 }

@@ -16,11 +16,11 @@
     <template v-slot:cell(position)="data">
       <img class="position" :src="`/img/positions/${data.item.position}.webp`" />
     </template>
-    <template v-slot:cell(username)="data">{{data.item.user.username}}</template>
+    <template v-slot:cell(user.username)="data">{{data.item.user.username}}</template>
     <template v-slot:cell(geoScores[0])="data">
       {{data.item.geoScores[0]}}
       <button
-        v-if="$store.state.user.discordid === data.item.user.discordid"
+        v-if="$store.state.user.discordid === data.item.user.discordid && !finished"
         @click="setScore(0)"
         class="btn float-right btn-sm"
       >
@@ -30,7 +30,7 @@
     <template v-slot:cell(geoScores[1])="data">
       {{data.item.geoScores[1]}}
       <button
-        v-if="$store.state.user.discordid === data.item.user.discordid"
+        v-if="$store.state.user.discordid === data.item.user.discordid && !finished"
         @click="setScore(1)"
         class="btn float-right btn-sm"
       >
@@ -40,7 +40,7 @@
     <template v-slot:cell(geoScores[2])="data">
       {{data.item.geoScores[2]}}
       <button
-        v-if="$store.state.user.discordid === data.item.user.discordid"
+        v-if="$store.state.user.discordid === data.item.user.discordid && !finished"
         @click="setScore(2)"
         class="btn float-right btn-sm"
       >
@@ -50,7 +50,7 @@
     <template v-slot:cell(geoScores[3])="data">
       {{data.item.geoScores[3]}}
       <button
-        v-if="$store.state.user.discordid === data.item.user.discordid"
+        v-if="$store.state.user.discordid === data.item.user.discordid && !finished"
         @click="setScore(3)"
         class="btn float-right btn-sm"
       >
@@ -60,14 +60,14 @@
     <template v-slot:cell(geoScores[4])="data">
       {{data.item.geoScores[4]}}
       <button
-        v-if="$store.state.user.discordid === data.item.user.discordid"
+        v-if="$store.state.user.discordid === data.item.user.discordid && !finished"
         @click="setScore(4)"
         class="btn float-right btn-sm"
       >
         <font-awesome-icon :icon="'pen'" />
       </button>
     </template>
-    <template v-slot:cell(total)="data">{{data.item.totalGeoScore}}</template>
+    <template v-slot:cell(totalGeoScore)="data">{{data.item.totalGeoScore}}</template>
     <template v-slot:cell(bonus)="data">{{data.item.bonus}}</template>
     <template v-slot:cell(points)="data">{{data.item.points}}</template>
   </b-table>
@@ -77,20 +77,20 @@
 import Swal from "sweetalert2";
 
 export default {
-  props: { round: Object, index: Number, users: Array, onSetScore: Function },
+  props: { round: Object, index: Number, users: Array, onSetScore: Function, finished: Boolean },
   data() {
     return {
-      sortBy: "",
+      sortBy: "position",
       sortDesc: false,
       fields: [
         { key: "position", label: "Pos.", sortable: true },
-        { key: "username", label: "Pseudo", sortable: true },
+        { key: "user.username", label: "Pseudo", sortable: true },
         { key: "geoScores[0]", label: "Round 1", sortable: true },
         { key: "geoScores[1]", label: "Round 2", sortable: true },
         { key: "geoScores[2]", label: "Round 3", sortable: true },
         { key: "geoScores[3]", label: "Round 4", sortable: true },
         { key: "geoScores[4]", label: "Round 5", sortable: true },
-        { key: "total", label: "Total", sortable: true },
+        { key: "totalGeoScore", label: "Total", sortable: true },
         { key: "bonus", label: "Points bonus", sortable: true },
         { key: "points", label: "Points", sortable: true }
       ]
@@ -98,7 +98,6 @@ export default {
   },
   methods: {
     rowClass(score) {
-      console.log(score);
       return score.color;
     },
     setScore(scoreindex) {

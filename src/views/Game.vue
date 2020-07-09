@@ -2,64 +2,40 @@
   <div id="game">
     <h1>{{game.name}}</h1>
     <div v-if="joined">
-      <p>{{game.users.length}} joueurs sur {{game.slots}}</p>
-      <div class="row">
-        <div class="col-6" v-for="team of game.teams" :key="team._id">
-          <button
-            class="btn btn-sm btn-primary"
-            @click="changeTeam(team._id)"
-            v-if="!game.started"
-          >Rejoindre l'équipe</button>
-          <table class="table table-sm table-hover">
-            <thead>
-              <tr :style="`color: white;`" :class="team.color">
-                <th scope="col">{{team.name}}</th>
-                <th scope="col">Pseudo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="table-secondary" v-for="user of team.users" :key="user._id">
-                <th scope="row">
-                  <discord-avatar :avatar="user.avatar" :discordid="user.discordid" />
-                </th>
-                <td>{{user.username}}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <game-multi
+        v-if="game.multi"
+        :game="game"
+        :start="start"
+        :finish="finish"
+        :startRound="startRound"
+        :setScore="setScore"
+        :changeTeam="changeTeam"
+      />
+      <game-solo
+        v-else
+        :game="game"
+        :start="start"
+        :finish="finish"
+        :startRound="startRound"
+        :setScore="setScore"
+      />
+      <button
+        v-if="game.started && !game.finished"
+        @click="finish"
+        class="btn btn-sm btn-success mt-3"
+      >Terminer la partie</button>
+      <button v-if="game.started"
+      @click="$router.push(`/games/r/${game.link}`)"
+        class="btn mt-3 btn-sm btn-primary float-right"
+        :disabled="!game.finished"
+      >Afficher les résultats 🏅</button>
+      <p v-if="game.finished" class="mt-3">
+        Une erreur dans les scores?
         <button
-          class="btn btn-sm btn-success"
-          @click="start"
-          :disabled="!teamsComplete"
-          v-if="!game.started"
-        >Commencer la partie</button>
-      </div>
-      <div v-if="game.started">
-        <hr />
-        <div class="row">
-          <div class="col-6">
-            <h4>Classement individuel</h4>
-            <leaderboard :scores="game.scores" />
-          </div>
-          <div class="col-6">
-            <h4>Classement des équipes</h4>
-            <team-leaderboard :teams="game.teams" />
-          </div>
-        </div>
-        <hr />
-        <div class="row">
-          <div class="col-12" v-for="(round, index) in game.rounds" :key="round._id">
-            <round
-              :round="round"
-              :teams="game.teams"
-              :startRound="startRound"
-              :onSetScore="setScore"
-              :users="game.users"
-              :index="index"
-            />
-          </div>
-        </div>
-      </div>
+          @click="reOpen"
+          class="btn btn-sm btn-warning"
+        >Réouvrir la partie</button>
+      </p>
     </div>
     <div v-else>
       <button class="btn btn-sm btn-success" @click="join">Rejoindre la partie</button>
@@ -72,43 +48,29 @@
 import api from "@/api";
 import { WSMessage } from "../obj/WSMessage";
 import store from "@/store/index";
-import Leaderboard from "@/components/Leaderboard";
-import TeamLeaderboard from "@/components/TeamLeaderboard";
-import Round from "@/components/Round";
-import DiscordAvatar from "@/components/DiscordAvatar";
 import Swal from "sweetalert2";
+import GameMulti from "@/components/GameMulti";
+import GameSolo from "@/components/GameSolo";
 
 export default {
   data() {
     return {
-      game: {}
+      game: { name: "" }
     };
   },
   components: {
-    Leaderboard,
-    TeamLeaderboard,
-    Round,
-    DiscordAvatar
+    GameMulti,
+    GameSolo
   },
-  async created() {
+  async beforeCreate() {
     this.game = (await api.getGame(this.$route.params.link)).data.game;
-    this.$options.sockets.onmessage = this.onMessageReceived;
+     this.$options.sockets.onmessage = this.onMessageReceived;
     this.login();
   },
+  async created(){
+   
+  },
   computed: {
-    teamsComplete() {
-      let ok = true;
-      if (this.game.multi) {
-        for (let team of this.game.teams) {
-          console.log(team);
-          if (team.users.length < 2) {
-            ok = false;
-            break;
-          }
-        }
-      }
-      return ok;
-    },
     joined() {
       for (let user of this.game.users) {
         if (user.discordid === store.state.user.discordid) return true;
@@ -169,6 +131,7 @@ export default {
       );
     },
     join() {
+      console.log(this.game._id);
       this.sendMessage(new WSMessage("JOIN", { gameid: this.game._id }));
     },
     start() {
@@ -176,6 +139,9 @@ export default {
     },
     finish() {
       this.sendMessage(new WSMessage("FINISH_GAME", { gameid: this.game._id }));
+    },
+    reOpen() {
+      this.sendMessage(new WSMessage("REOPEN_GAME", { gameid: this.game._id }));
     },
     showError(error) {
       Swal.fire({

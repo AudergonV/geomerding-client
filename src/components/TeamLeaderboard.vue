@@ -19,10 +19,13 @@
           :style="''"
         />
       </template>
-      <template v-slot:cell(position)="data"><img class="position" :src="`/img/positions/${data.item.score.position}.webp`"/></template>
-      <template v-slot:cell(teamname)="data">{{data.item.name}}</template>
-      <template v-slot:cell(geoscore)="data">{{data.item.score.geoScore}}</template>
-      <template v-slot:cell(score)="data">{{data.item.score.points}}</template>
+      <template v-slot:cell(score.position)="data">
+        <img class="position" :src="`/img/positions/${data.item.score.position}.webp`" />
+      </template>
+      <template v-slot:cell(name)="data">{{data.item.name}}</template>
+      <template v-slot:cell(score.geoscore)="data">{{data.item.score.geoScore}}</template>
+      <template v-slot:cell(score.bonus)="data">{{data.item.score.bonus}}</template>
+      <template v-slot:cell(score.points)="data">{{data.item.score.points}}</template>
     </b-table>
   </div>
 </template>
@@ -34,13 +37,14 @@ export default {
   },
   data() {
     return {
-      sortBy: "",
+      sortBy: "score.position",
       sortDesc: false,
       fields: [
-        { key: "position", label: "Pos.", sortable: true },
-        { key: "teamname", label: "Equipe", sortable: true },
-        { key: "geoscore", label: "Score geo.", sortable: true },
-        { key: "score", label: "Points", sortable: true }
+        { key: "score.position", label: "Pos.", sortable: true },
+        { key: "name", label: "Equipe", sortable: true },
+        { key: "score.geoscore", label: "Score geo.", sortable: true },
+        { key: "score.bonus", label: "Bonus"},
+        { key: "score.points", label: "Points", sortable: true }
       ]
     };
   },

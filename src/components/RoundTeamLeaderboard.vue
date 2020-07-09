@@ -34,8 +34,8 @@ export default {
   props: { teams: Array, index: Number },
   data() {
     return {
-      sortBy: "",
-      sortDesc: false,
+      sortBy: "score",
+      sortDesc: true,
       fields: [
         { key: "position", label: "Pos.", sortable: true },
         { key: "teamname", label: "Equipe", sortable: true },

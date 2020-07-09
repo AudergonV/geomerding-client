@@ -5,8 +5,7 @@
       <div class="card-body">
         <h4 class="card-title">{{round.map}}</h4>
         {{moment(round.time).format("mm:ss")}} /
-        <img :src="`img/${round.coop ? 'group.png' : 'user.png'}`" class="icon" />
-        {{round.coop ? 'Co-op' : 'Solo'}}
+        {{round.coop ? '🤝 Co-op' : '🧍 Solo'}}
         <button
           v-if="!round.started"
           @click="startRound(round.malus, index)"
@@ -16,7 +15,7 @@
           :href="round.malus === 3 ? round.speedrunlink: round.link"
           class="btn btn-success btn-sm float-right"
           target="_blank"
-          v-else
+          v-if="round.started && !finished"
         >Ouvrir le challenge Geoguessr</a>
         <br />
         <select
@@ -49,8 +48,9 @@
           :users="users"
           :onSetScore="onSetScore"
           :round="round"
+          :finished="finished"
         />
-        <round-team-leaderboard v-if="round.started" :index="index" :teams="teams" />
+        <round-team-leaderboard v-if="round.started && multi" :index="index" :teams="teams" />
       </div>
     </div>
   </div>
@@ -63,6 +63,8 @@ import RoundTeamLeaderboard from "@/components/RoundTeamLeaderboard";
 
 export default {
   props: {
+    finished: Boolean,
+    multi: Boolean,
     round: Object,
     users: Array,
     teams: Array,

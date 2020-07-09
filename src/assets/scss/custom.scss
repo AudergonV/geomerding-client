@@ -1,14 +1,48 @@
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "node_modules/bootstrap-vue/src/index.scss";
 
-
 * {
     font-family: Arial;
+}
+
+#podium {
+    /*.podium {
+        height: 400px;
+    }*/
+    td, p {
+        vertical-align: bottom;
+        text-align: center;
+        .podiumpart {
+            display: block;
+            margin: auto;
+            img {
+                max-width: 200px;
+            }
+        }
+    }
+
+    .podiumplace {
+        display: block;
+        margin-bottom: 5px;
+        font-family: 'Arial';
+        font-weight: bold;
+    }
+
+    .podiumroot {
+        td {
+            vertical-align: bottom;
+            table {
+                display: block;
+                margin: auto;
+            }
+        }
+    }
 }
 
 .content {
     margin-top: 50px;
     margin-bottom: 100px;
+    padding-bottom: 300px;
 }
 
 .avatar {
@@ -45,16 +79,48 @@
 }
 
 footer {
-    p{
+    p {
         color: white;
     }
     img {
         height: 25px;
     }
     background-color: rgb(24, 27, 31);
-    width:100vw;
+    width: 100vw;
     padding-top: 20px;
     padding-bottom: 10px;
     position: fixed;
     bottom: 0;
 }
+
+
+//TOOLTIP
+
+.mytooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+  }
+  
+  /* Tooltip text */
+  .mytooltip .mytooltiptext {
+    visibility: hidden;
+    width: 250px;
+    background-color: black;
+    span {
+    color: #fff;
+    }
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+  
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .mytooltip:hover .mytooltiptext {
+    visibility: visible;
+  }
+  

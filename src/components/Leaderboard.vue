@@ -19,7 +19,7 @@
         />
       </template>
       <template v-slot:cell(position)="data"><img class="position" :src="`/img/positions/${data.item.position}.webp`"/></template>
-      <template v-slot:cell(username)="data">{{data.item.user.username}}</template>
+      <template v-slot:cell(user.username)="data">{{data.item.user.username}}</template>
       <template v-slot:cell(geoscore)="data">{{data.item.geoScore}}</template>
       <template v-slot:cell(score)="data">{{data.item.points}}</template>
     </b-table>
@@ -33,13 +33,13 @@ export default {
   },
   data() {
     return {
-      sortBy: "",
+      sortBy: "position",
       sortDesc: false,
       fields: [
         { key: "position", label: "Pos.", sortable: true },
-        { key: "username", label: "Pseudo", sortable: true },
+        { key: "user.username", label: "Pseudo", sortable: true },
         { key: "geoscore", label: "Score geo.", sortable: true },
-        { key: "score", label: "Points", sortable: true }
+        { key: "points", label: "Points", sortable: true }
       ]
     };
   },

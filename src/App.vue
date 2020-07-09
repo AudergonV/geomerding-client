@@ -71,12 +71,21 @@ export default {
             element: "img",
             attributes: { src: "img/earth.png" }
           }
+        },
+        {
+          href: "/history",
+          title: "Historique de parties",
+          icon: {
+            element: "img",
+            attributes: { src: "img/clock.png" }
+          }
         }
       ]
     };
   },
-  async created() {
-    store.commit("setUser", (await api.getMe()).data);
+  async beforeCreate() {
+    let user = (await api.getMe()).data;
+    store.commit("setUser", user);
     if (store.state.user.avatar && store.state.user.avatar !== null) {
       this.menu[2].icon = {
         element: "img",

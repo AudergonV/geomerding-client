@@ -6,6 +6,8 @@ import Games from '../views/Games.vue';
 import CreateGame from '../views/CreateGame.vue';
 import Profile from '../views/Profile.vue';
 import Browse from '../views/Browse.vue';
+import Results from '../views/Results.vue';
+import History from '../views/History.vue';
 
 Vue.use(VueRouter)
 
@@ -27,6 +29,11 @@ const routes = [
     component: Game
   },
   {
+    path: '/games/r/:link',
+    name: 'Results',
+    component: Results
+  },
+  {
     path: '/games/create',
     name: 'CreateGame',
     component: CreateGame
@@ -34,7 +41,8 @@ const routes = [
   {
     path: '/profile',
     name: 'Profile', component: Profile
-  }
+  },
+  { path: '/history', name: 'History', component: History }
 ]
 
 const router = new VueRouter({

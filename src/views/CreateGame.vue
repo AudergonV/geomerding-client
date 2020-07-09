@@ -18,8 +18,7 @@
           v-model="game.private"
         />
         <label class="custom-control-label" for="privateswitch">
-          <img :src="`img/${game.private ? 'lock.png' : 'earth.png'}`" class="icon mr-1" />
-          {{game.private?'Partie privée' : 'Partie publique'}}
+          {{game.private?'🔒 Partie privée' : '🌍 Partie publique'}}
         </label>
       </div>
     </div>
@@ -46,10 +45,9 @@
           v-model="game.multi"
           @change="multiChange"
         />
-        <label
-          class="custom-control-label"
-          for="soloswitch"
-        >{{game.multi?'Partie en équipe' : 'Partie solo'}}</label>
+        <label class="custom-control-label" for="soloswitch">
+          {{game.multi?'🤼 Par équipe' : '🧍 Solo'}}
+        </label>
       </div>
     </div>
     <div v-if="game.multi" class="form-group">
@@ -72,7 +70,7 @@
       <div
         v-for="(round, index) in game.rounds"
         :key="index"
-        class="card border-primary ml-3 mb-3 col-4"
+        class="card border-primary col-4"
       >
         <div class="card-header">
           Challenge {{index+1}}
@@ -94,16 +92,15 @@
                 :disabled="!game.multi"
               />
               <label class="custom-control-label" :for="`coopswitch${index}`">
-                <img :src="`img/${round.coop ? 'group.png' : 'user.png'}`" class="icon mr-1" />
-                {{round.coop?'Co-op' : 'Solo'}}
+                {{round.coop?'🤝 Co-op' : '🧍 Solo'}}
               </label>
             </div>
-            <label class="col-form-label" for="map">Map:</label>
+            <label class="col-form-label" for="map">🗺️ Map:</label>
             <input type="text" class="form-control" v-model="round.map" placeholder="Map" id="map" />
-            <label class="col-form-label" for="time">Temps:</label>
+            <label class="col-form-label" for="time">⏱️ Temps:</label>
             <br />
             <date-picker type="time" v-model="round.time" format="mm:ss" />
-            <label class="col-form-label" for="link">Lien vers le challenge Geoguessr:</label>
+            <label class="col-form-label" for="link">🔗 Lien vers le challenge Geoguessr:</label>
             <input
               type="text"
               class="form-control"
@@ -114,7 +111,7 @@
             <label
               class="col-form-label"
               for="speedrunlink"
-            >Lien vers le challenge Geoguessr (facultatif):</label>
+            >🔗 Lien vers le challenge Geoguessr (facultatif):</label>
             <input
               type="text"
               class="form-control"
@@ -147,8 +144,8 @@ export default {
       game: {
         name: "",
         private: true,
-        slots: 4,
-        multi: true,
+        slots: 2,
+        multi: false,
         teams: 2,
         coop: false,
         rounds: []
@@ -166,15 +163,9 @@ export default {
       if (this.game.multi) {
         if (this.game.slots < 4) this.game.slots = 4;
       } else {
-        this.game.multi = true;
-        Swal.fire({
-          icon: "warning",
-          text: "Le mode solo n'est pas encore disponible, désolé!"
-        })
-        this.$forceUpdate();
-        /*for (let round of this.game.rounds) {
+        for (let round of this.game.rounds) {
           round.coop = false;
-        }*/
+        }
       }
     },
     addRound() {
@@ -208,6 +199,13 @@ export default {
       }
       let result = await api.createGame(this.game);
       if (result.code === 200) {
+        await Swal.fire({
+          title: "Invite tes amis!",
+          text: "Partage leur ce lien pour qu'ils puissent rejoindre:",
+          input: "text",
+          inputAttributes: { editable: false },
+          inputValue: `https://geo.gwyrin.ch:7777/#/games/play/${result.data.game.link}`
+        });
         router.push(`/games/play/${result.data.game.link}`);
       } else {
         this.showError(result.message);

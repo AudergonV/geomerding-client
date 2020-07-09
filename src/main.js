@@ -11,17 +11,18 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import VueNativeSock from "vue-native-websocket";
+import VueConfetti from 'vue-confetti'
 
+Vue.use(VueConfetti)
 Vue.use(VueSidebarMenu)
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.use(BootstrapVue);
 library.add(fas);
-Vue.use(VueNativeSock, "wss://geo.gwyrin.ch:7777", {
+Vue.use(VueNativeSock, "wss://geo.gwyrin.ch:7878", {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000
 });
-
 
 
 Vue.config.productionTip = false
