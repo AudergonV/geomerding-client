@@ -1,28 +1,114 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <sidebar-menu :menu="menu" :hideToggle="false">
+      <span slot="toggle-icon">
+        <font-awesome-icon :icon="'eye'" />
+      </span>
+      <span slot="dropdown-icon">
+        <font-awesome-icon :icon="'caret-down'" />
+      </span>
+    </sidebar-menu>
+    <div class="container well content">
+      <div v-bind:class="(loading ? ' loading' : 'not-loading')">
+        <transition name="component-fade" mode="out-in">
+          <router-view />
+        </transition>
+      </div>
+    </div>
+    <footer>
+      <center>
+        <p>
+          Site créé par Gwyrin
+          <img src="/img/gwyrin.png" />
+        </p>
+      </center>
+    </footer>
   </div>
 </template>
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { SidebarMenu } from "vue-sidebar-menu";
+import api from "@/api";
+import store from "@/store/index.js";
+import MenuHeader from "@/components/MenuHeader";
 
 export default {
-  name: 'App',
   components: {
-    HelloWorld
+    SidebarMenu
+  },
+  data() {
+    return {
+      menu: [
+        { component: MenuHeader, hiddenOnCollapse: true },
+        {
+          header: true,
+          title: "Menu",
+          hiddenOnCollapse: true
+        },
+        {
+          href: "/profile",
+          title: "Mon profil"
+        },
+        {
+          href: "/",
+          title: "Accueil",
+          icon: {
+            element: "img",
+            attributes: { src: "img/home.png" }
+          }
+        },
+        {
+          href: "/browse",
+          title: "Explorer",
+          icon: {
+            element: "img",
+            attributes: { src: "img/compas.png" }
+          }
+        },
+        {
+          href: "/mygames",
+          title: "Mes parties",
+          icon: {
+            element: "img",
+            attributes: { src: "img/earth.png" }
+          }
+        }
+      ]
+    };
+  },
+  async created() {
+    store.commit("setUser", (await api.getMe()).data);
+    if (store.state.user.avatar && store.state.user.avatar !== null) {
+      this.menu[2].icon = {
+        element: "img",
+        attributes: {
+          src: `https://cdn.discordapp.com/avatars/${this.$store.state.user.discordid}/${this.$store.state.user.avatar}`
+        }
+      };
+    } else {
+      this.menu[2].icon = {
+        element: "img",
+        attributes: {
+          src: `img/avatar_default.png`
+        }
+      };
+    }
+  },
+  methods: {},
+  computed: {
+    loading() {
+      return store.state.loading;
+    }
   }
-}
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.component-fade-enter-active,
+.component-fade-leave-active {
+  transition: opacity 0.1s ease;
+}
+.component-fade-enter,
+.component-fade-leave-to {
+  opacity: 0;
 }
 </style>
