@@ -3,8 +3,8 @@
     <div class="card border-secondary mb-3">
       <div class="card-header">Challenge {{index+1}}</div>
       <div class="card-body">
-        <h4 class="card-title">{{round.map}}</h4>
-        {{moment(round.time).format("mm:ss")}} /
+        <h4 class="card-title">🗺️ {{round.map}}</h4>
+        ⏱️ {{moment(round.time).format("mm:ss")}} /
         {{round.coop ? '🤝 Co-op' : '🧍 Solo'}}
         <button
           v-if="!round.started"
@@ -20,22 +20,14 @@
         <br />
         <select
           class="col-3 mt-1 custom-select"
-          v-if="!round.started && round.coop"
+          v-if="!round.started"
           v-model="round.malus"
         >
           <option v-for="(malu, index) in malus" :key="index" :value="index">{{malu}}</option>
         </select>
-        <select
-          class="col-3 mt-1 custom-select"
-          v-if="!round.started && !round.coop"
-          v-model="round.malus"
-        >
-          <option :value="0">Pas de malus</option>
-          <option :value="3">Speedrun</option>
-        </select>
-        <p v-else>Malus: {{malus[round.malus]}}</p>
+        <p v-else>😈 Malus: {{malus[round.malus]}}</p>
         <button
-          v-if="!round.started && round.coop"
+          v-if="!round.started"
           @click="randomMalus"
           class="btn btn-sm ml-2 btn-primary"
           title="Malus aléatoire"
@@ -79,7 +71,7 @@ export default {
   data() {
     return {
       moment,
-      malus: ["Pas de malus", "Don't move", "Partir un jour", "Speedrun"],
+      malus: ["Pas de malus", "Don't move", "Partir un jour", "Speedrun"]
     };
   },
   methods: {

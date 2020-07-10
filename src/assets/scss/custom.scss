@@ -9,7 +9,8 @@
     /*.podium {
         height: 400px;
     }*/
-    td, p {
+    td,
+    p {
         vertical-align: bottom;
         text-align: center;
         .podiumpart {
@@ -24,7 +25,7 @@
     .podiumplace {
         display: block;
         margin-bottom: 5px;
-        font-family: 'Arial';
+        font-family: "Arial";
         font-weight: bold;
     }
 
@@ -93,6 +94,26 @@ footer {
     bottom: 0;
 }
 
+.loading {
+    opacity: 0.5;
+    transition: 1s;
+}
+
+.not-loading {
+    opacity: 1;
+    transition: 0.5s;
+}
+.hidden-loader {
+    opacity: 0;
+}
+
+.loader {
+    position: relative;
+    text-align: center;
+    top: 200px;
+    z-index: 999;
+    transition: 0.8s;
+  }
 
 //TOOLTIP
 
@@ -100,27 +121,26 @@ footer {
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
-  }
-  
-  /* Tooltip text */
-  .mytooltip .mytooltiptext {
+}
+
+/* Tooltip text */
+.mytooltip .mytooltiptext {
     visibility: hidden;
     width: 250px;
     background-color: black;
     span {
-    color: #fff;
+        color: #fff;
     }
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;
-  
+
     /* Position the tooltip text - see examples below! */
     position: absolute;
     z-index: 1;
-  }
-  
-  /* Show the tooltip text when you mouse over the tooltip container */
-  .mytooltip:hover .mytooltiptext {
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.mytooltip:hover .mytooltiptext {
     visibility: visible;
-  }
-  
+}

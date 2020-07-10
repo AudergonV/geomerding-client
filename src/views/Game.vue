@@ -1,6 +1,13 @@
 <template>
   <div id="game">
-    <h1>{{game.name}}</h1>
+    <h1>
+      {{game.name}}
+      <button
+        class="btn btn-danger btn-sm float-right"
+        @click="deleteGame"
+        v-if="!game.started && admin"
+      >Supprimer la partie</button>
+    </h1>
     <div v-if="joined">
       <game-multi
         v-if="game.multi"
@@ -24,8 +31,9 @@
         @click="finish"
         class="btn btn-sm btn-success mt-3"
       >Terminer la partie</button>
-      <button v-if="game.started"
-      @click="$router.push(`/games/r/${game.link}`)"
+      <button
+        v-if="game.started"
+        @click="$router.push(`/games/r/${game.link}`)"
         class="btn mt-3 btn-sm btn-primary float-right"
         :disabled="!game.finished"
       >Afficher les résultats 🏅</button>
@@ -38,8 +46,7 @@
       </p>
     </div>
     <div v-else>
-      <button class="btn btn-sm btn-success" @click="join">Rejoindre la partie</button>
-      <p style="font-size: 12px">Si le bouton ne répond pas n'hésite pas à faire un p'tit F5...</p>
+      <button class="btn btn-success btn-block" @click="join">Rejoindre la partie!</button>
     </div>
   </div>
 </template>
@@ -55,30 +62,61 @@ import GameSolo from "@/components/GameSolo";
 export default {
   data() {
     return {
-      game: { name: "" }
+      game: { name: "" },
+      timeout: false
     };
   },
   components: {
     GameMulti,
     GameSolo
   },
-  async beforeCreate() {
-    this.game = (await api.getGame(this.$route.params.link)).data.game;
-     this.$options.sockets.onmessage = this.onMessageReceived;
-    this.login();
-  },
-  async created(){
-   
+  mounted() {
+    this.load();
   },
   computed: {
     joined() {
-      for (let user of this.game.users) {
-        if (user.discordid === store.state.user.discordid) return true;
+      if (this.game && store.state.user) {
+        for (let user of this.game.users) {
+          if (user.discordid === store.state.user.discordid) return true;
+        }
       }
       return false;
+    },
+    admin() {
+      if (this.game && this.$store.state.user) {
+        console.log(this.game.creator);
+        return this.game.creator.discordid === store.state.user.discordid;
+      } else {
+        return false;
+      }
+    }
+  },
+  watch: {
+    "$route.params.link": function() {
+      this.load();
     }
   },
   methods: {
+    async load() {
+      this.game = (await api.getGame(this.$route.params.link)).data.game;
+      if (!this.game) {
+        this.$router.push("/404");
+      } else {
+        //this.$disconnect();
+        this.$connect();
+        this.$store.commit("setLoading", true);
+        this.timeout = true;
+        setTimeout(() => {
+          if (this.timeout) {
+            this.showError("Impossible de se connecter au serveur.");
+            this.$store.commit("setLoading", false);
+            this.$router.push("/");
+          }
+        }, 3000);
+        this.$options.sockets.onclose = () => console.log("CLOSED");
+        this.$options.sockets.onmessage = this.onMessageReceived;
+      }
+    },
     sendMessage(wsm) {
       this.$socket.send(JSON.stringify(wsm));
     },
@@ -95,6 +133,15 @@ export default {
           case "ERROR":
             this.showError(wsm.data);
             break;
+          case "CONNECTED":
+            this.timeout = false;
+            this.$store.commit("setLoading", false);
+            this.login();
+            break;
+          case "GAME_DELETED":
+            this.showError(wsm.data);
+            this.$router.push("/mygames");
+            break;
         }
       } catch (e) {
         console.log(`ERROR : ${e.toString()}`);
@@ -105,6 +152,10 @@ export default {
       this.sendMessage(
         new WSMessage("LOGIN", { token, link: this.$route.params.link })
       );
+    },
+    deleteGame() {
+      this.sendMessage(new WSMessage("DELETE_GAME", { gameid: this.game._id }));
+      this.$router.push("/mygames");
     },
     changeTeam(teamid) {
       this.sendMessage(
@@ -131,8 +182,12 @@ export default {
       );
     },
     join() {
-      console.log(this.game._id);
-      this.sendMessage(new WSMessage("JOIN", { gameid: this.game._id }));
+      this.sendMessage(
+        new WSMessage("JOIN", {
+          gameid: this.game._id,
+          link: this.$route.params.link
+        })
+      );
     },
     start() {
       this.sendMessage(new WSMessage("START_GAME", { gameid: this.game._id }));

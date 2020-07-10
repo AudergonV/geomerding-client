@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const client = axios.create({
-    baseURL: 'https://geo.gwyrin.ch:7878',
+    baseURL: 'https://geo.gwyrin.ch:7777',
     json: true
 })
 
@@ -12,6 +12,9 @@ export default {
             url: resource,
             data
         }).then(req => {
+            if (req.data.data.code === 403) {
+                location.reload();
+            }
             return req.data;
         }).catch(error => {
             if (error.response) {

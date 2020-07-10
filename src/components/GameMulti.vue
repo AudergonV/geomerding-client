@@ -1,6 +1,6 @@
 <template>
   <div if="gamemulti">
-    <p>{{game.users.length}} joueurs sur {{game.slots}}<span v-if="teamsComplete"> / Il faut au moins deux joueurs par équipe pour commencer</span></p>
+    <p>{{game.users.length}} joueurs sur {{game.slots}}<span v-if="!teamsComplete"> / Il faut au moins deux joueurs par équipe pour commencer</span></p>
     <div class="row">
       <div class="col-6" v-for="team of game.teams" :key="team._id">
         <button
@@ -89,7 +89,6 @@ export default {
       let ok = true;
       if (this.game.multi) {
         for (let team of this.game.teams) {
-          console.log(team);
           if (team.users.length < 2) {
             ok = false;
             break;

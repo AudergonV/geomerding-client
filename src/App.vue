@@ -9,7 +9,11 @@
       </span>
     </sidebar-menu>
     <div class="container well content">
-      <div v-bind:class="(loading ? ' loading' : 'not-loading')">
+      <div v-bind:class="loading ? 'loader' : 'hidden-loader'">
+        <h4>
+          Connexion...</h4>
+      </div>
+      <div :class="(loading ? ' loading' : 'not-loading')">
         <transition name="component-fade" mode="out-in">
           <router-view />
         </transition>
@@ -79,6 +83,14 @@ export default {
             element: "img",
             attributes: { src: "img/clock.png" }
           }
+        },
+        {
+          href: "/changelog",
+          title: "Changelog",
+          icon: {
+            element: "img",
+            attributes: { src: "img/list.png" }
+          }
         }
       ]
     };
@@ -101,11 +113,23 @@ export default {
         }
       };
     }
+    let redirect = window.localStorage.getItem("redirect");
+    if (redirect) {
+      window.localStorage.removeItem("redirect");
+      this.$router.push(redirect);
+    }
   },
   methods: {},
   computed: {
     loading() {
       return store.state.loading;
+    }
+  },
+  watch: {
+    $route(to, from) {
+      if (from.name === "Game") {
+        this.$disconnect();
+      }
     }
   }
 };

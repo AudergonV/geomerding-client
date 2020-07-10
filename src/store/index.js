@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state: {
     loading: false,
     user: { username: '', avatar: null },
-    version: '1.0'
+    version: '1.1'
   },
   mutations: {
     setLoading(state, loading) {
